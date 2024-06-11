@@ -17,7 +17,7 @@ class CompendiumEntryTest {
         compendiumEntryService.findALl().forEach(
                 compendiumEntry -> {
                     UUID id = compendiumEntry.getId();
-                    compendiumEntryService.delete(id);
+                    compendiumEntryService.hardDelete(id);
                 }
         );
     }
@@ -28,7 +28,8 @@ class CompendiumEntryTest {
     @Test
     void shouldSaveRecordInDatabase() {
         //GIVEN
-        CompendiumEntry compendiumEntry = new CompendiumEntry("Dragon", "Monster");
+        CompendiumEntry compendiumEntry = new CompendiumEntry("Dragon", EntryType.MONSTER);
+
         //WHEN
         compendiumEntryService.save(compendiumEntry);
 
@@ -39,14 +40,14 @@ class CompendiumEntryTest {
     @Test
     void shouldFindRecordInDatabase() throws CompendiumEntryNotFoundException {
         //GIVEN
-        CompendiumEntry compendiumEntry = new CompendiumEntry("Dragon", "Monster");
+        CompendiumEntry compendiumEntry = new CompendiumEntry("Dragon", EntryType.MONSTER);
         UUID id = compendiumEntryService.save(compendiumEntry);
 
         //WHEN
         CompendiumEntry actualEntry = compendiumEntryService.find(id);
 
         //THEN
-        CompendiumEntry expectedCompendiumEntry = new CompendiumEntry("Dragon", "Monster");
+        CompendiumEntry expectedCompendiumEntry = new CompendiumEntry("Dragon", EntryType.MONSTER);
         Assertions.assertThat(actualEntry)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
@@ -67,8 +68,8 @@ class CompendiumEntryTest {
     @Test
     void shouldUpdateRecordInDatabase() throws CompendiumEntryNotFoundException {
         //GIVEN
-        CompendiumEntry compendiumEntry = new CompendiumEntry("Dragon", "Monster");
-        CompendiumEntry expectedCompendiumEntry = new CompendiumEntry("Goblin", "Monster");
+        CompendiumEntry compendiumEntry = new CompendiumEntry("Dragon", EntryType.MONSTER);
+        CompendiumEntry expectedCompendiumEntry = new CompendiumEntry("Goblin", EntryType.MONSTER);
         UUID id = compendiumEntryService.save(compendiumEntry);
 
         //WHEN
@@ -76,19 +77,26 @@ class CompendiumEntryTest {
 
         //THEN
         CompendiumEntry actualEntry = compendiumEntryService.find(id);
-        Assertions.assertThat(actualEntry).isEqualTo(expectedCompendiumEntry);
+        assertAreEqual(actualEntry,expectedCompendiumEntry);
     }
 
     @Test
     void shouldDeleteRecordInDatabase() {
         //GIVEN
-        CompendiumEntry compendiumEntry = new CompendiumEntry("Dragon", "Monster");
+        CompendiumEntry compendiumEntry = new CompendiumEntry("Dragon", EntryType.MONSTER);
         UUID id = compendiumEntryService.save(compendiumEntry);
 
         //WHEN
-        compendiumEntryService.delete(id);
+        compendiumEntryService.hardDelete(id);
 
         //THEN
         Assertions.assertThat(compendiumEntryService.findALl()).isEmpty();
+    }
+
+    private void assertAreEqual(CompendiumEntry actualCompendiumEntry, CompendiumEntry expectedCompendiumEntry) {
+        Assertions.assertThat(actualCompendiumEntry)
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(expectedCompendiumEntry);
     }
 }

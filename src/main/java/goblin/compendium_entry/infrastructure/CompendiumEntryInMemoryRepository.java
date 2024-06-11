@@ -11,8 +11,10 @@ public interface CompendiumEntryInMemoryRepository {
     UUID save(CompendiumEntry compendiumEntry);
 
     Optional<CompendiumEntry> findById(UUID compendiumEntryId);
+    Optional<CompendiumEntry> findSoftDeletedById(UUID compendiumEntryId);
 
     CompendiumEntry findExisting(UUID compendiumEntryId) throws CompendiumEntryNotFoundException;
+    CompendiumEntry findSoftDeleted(UUID compendiumEntryId) throws CompendiumEntryNotFoundException;
 
     List<CompendiumEntry> findAll();
 

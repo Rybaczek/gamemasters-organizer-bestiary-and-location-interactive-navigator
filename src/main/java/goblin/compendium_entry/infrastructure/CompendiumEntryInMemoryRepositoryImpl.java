@@ -18,18 +18,38 @@ public class CompendiumEntryInMemoryRepositoryImpl implements CompendiumEntryInM
 
     @Override
     public Optional<CompendiumEntry> findById(UUID compendiumEntryId) {
+        Optional<CompendiumEntry> entry = Optional.ofNullable(compendiumEntries.get(compendiumEntryId));
+
+        if (entry.isPresent() && entry.get().getIsSoftDeleted().equals(Boolean.TRUE)) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(compendiumEntries.get(compendiumEntryId));
     }
 
     @Override
     public CompendiumEntry findExisting(UUID compendiumEntryId) throws CompendiumEntryNotFoundException {
-        return Optional.ofNullable(compendiumEntries.get(compendiumEntryId))
-                .orElseThrow(() -> new CompendiumEntryNotFoundException("Couldn't find a Compendium Entry with id " + compendiumEntryId));
+        return findById(compendiumEntryId).orElseThrow(() ->
+                new CompendiumEntryNotFoundException("Couldn't find a Compendium Entry with id " + compendiumEntryId)
+        );
+    }
+
+    @Override
+    public Optional<CompendiumEntry> findSoftDeletedById(UUID compendiumEntryId) {
+        return Optional.ofNullable(compendiumEntries.get(compendiumEntryId));
+    }
+    @Override
+    public CompendiumEntry findSoftDeleted(UUID compendiumEntryId) throws CompendiumEntryNotFoundException {
+        return findSoftDeletedById(compendiumEntryId).orElseThrow(() ->
+                new CompendiumEntryNotFoundException("Couldn't find a Compendium Entry with id " + compendiumEntryId)
+        );
     }
 
     @Override
     public List<CompendiumEntry> findAll() {
-        return compendiumEntries.values().stream().toList();
+        return compendiumEntries.values()
+                .stream()
+                .filter(compendiumEntry -> compendiumEntry.getIsSoftDeleted().equals(Boolean.FALSE))
+                .toList();
     }
 
     @Override

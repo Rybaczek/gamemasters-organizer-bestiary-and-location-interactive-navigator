@@ -17,11 +17,14 @@ public class CompendiumEntry {
     @EqualsAndHashCode.Include
     private final UUID id;
     private String name;
-    private String entryType;
+    private EntryType entryType;
+    private Boolean isSoftDeleted;
 
-    public CompendiumEntry(String name, String entryType) {
+    public CompendiumEntry(String name, EntryType entryType) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.entryType = entryType;
+        this.isSoftDeleted = Boolean.FALSE;
+
     }
 }
