@@ -9,5 +9,4 @@ public class GamemastersOrganizerBestiaryAndLocationInteractiveNavigatorApplicat
 	public static void main(String[] args) {
 		SpringApplication.run(GamemastersOrganizerBestiaryAndLocationInteractiveNavigatorApplication.class, args);
 	}
-
 }
