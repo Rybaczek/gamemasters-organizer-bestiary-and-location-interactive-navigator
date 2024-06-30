@@ -1,6 +1,6 @@
 package goblin;
 
-import goblin.compendium_entry.infrastructure.CompendiumEntryInMemoryTestRepository;
+import goblin.compendium_entry.infrastructure.CompendiumEntryTestRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 public abstract class BaseIntegrationTest {
 
     @Autowired
-    private CompendiumEntryInMemoryTestRepository compendiumEntryInMemoryTestRepository;
+    private CompendiumEntryTestRepository compendiumEntryInMemoryTestRepository;
 
     @BeforeEach
     public void cleanInMemoryDatabaseEach() {

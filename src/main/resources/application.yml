@@ -1,0 +1,8 @@
+goblin:
+  compendium-entry:
+    days-to-hard-delete: 30
+
+
+    cron:
+      #      job will run every day at midnight
+      cleanup-deleted-compendium-entries: "0 0 0 * * *"

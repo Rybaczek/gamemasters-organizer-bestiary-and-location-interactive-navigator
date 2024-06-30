@@ -4,19 +4,21 @@ import goblin.compendium_entry.core.CompendiumEntry;
 import goblin.compendium_entry.core.DateTimeProvider;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * The in memory repository is a temporary solution that gives me more time to decide
  * which database to use while still developing main goal of a project
  */
 @Repository
-public class CompendiumEntryInMemoryRepositoryImpl implements CompendiumEntryInMemoryRepository {
+public class CompendiumEntryRepositoryImpl implements CompendiumEntryRepository {
 
     protected final Map<UUID, CompendiumEntry> compendiumEntries = new HashMap<>();
     private final DateTimeProvider dateTimeProvider;
 
-    public CompendiumEntryInMemoryRepositoryImpl(DateTimeProvider dateTimeProvider) {
+    public CompendiumEntryRepositoryImpl(DateTimeProvider dateTimeProvider) {
         this.dateTimeProvider = dateTimeProvider;
     }
 
@@ -43,11 +45,17 @@ public class CompendiumEntryInMemoryRepositoryImpl implements CompendiumEntryInM
     }
 
     @Override
+    public List<CompendiumEntry> findAllExceedingSoftDeleteDate(Instant date) {
+        return compendiumEntries.values().stream()
+                .filter(exceedingSoftDeletedDate(date))
+                .toList();
+    }
+
+    @Override
     public List<CompendiumEntry> findByOwnerId(UUID ownerId) {
-        return compendiumEntries.values()
-                .stream()
+        return compendiumEntries.values().stream()
                 .filter(compendiumEntry -> compendiumEntry.getOwnerId().equals(ownerId))
-                .filter(compendiumEntry -> compendiumEntry.getSoftDeleteDate().isEmpty())
+                .filter(CompendiumEntry::isActive)
                 .toList();
     }
 
@@ -58,6 +66,12 @@ public class CompendiumEntryInMemoryRepositoryImpl implements CompendiumEntryInM
 
     @Override
     public void delete(UUID compendiumEntryId) {
-        compendiumEntries.get(compendiumEntryId).setSoftDeleteDate(dateTimeProvider.currentDate());
+        compendiumEntries.remove(compendiumEntryId);
+    }
+
+    private static Predicate<CompendiumEntry> exceedingSoftDeletedDate(Instant date) {
+        return compendiumEntry -> compendiumEntry.getSoftDeleteDate()
+                .map(softDeletedDate -> softDeletedDate.isBefore(date))
+                .orElse(false);
     }
 }

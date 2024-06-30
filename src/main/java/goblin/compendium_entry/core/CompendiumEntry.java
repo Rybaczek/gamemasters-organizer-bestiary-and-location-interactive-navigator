@@ -34,4 +34,16 @@ public class CompendiumEntry {
     public Optional<Instant> getSoftDeleteDate() {
         return Optional.ofNullable(softDeleteDate);
     }
+
+    public void markForSoftDelete(DateTimeProvider dateTimeProvider) {
+        softDeleteDate = dateTimeProvider.currentDate();
+    }
+
+    public void restoreFromSoftDelete() {
+        softDeleteDate = null;
+    }
+
+    public boolean isActive() {
+        return softDeleteDate == null;
+    }
 }
