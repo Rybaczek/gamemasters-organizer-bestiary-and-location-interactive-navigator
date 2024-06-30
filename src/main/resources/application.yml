@@ -1,0 +1,6 @@
+goblin:
+  compendium-entry:
+    days-to-hard-delete: 30
+
+    cron:
+      cleanup-deleted-compendium-entries: "0 0 0 * * *"

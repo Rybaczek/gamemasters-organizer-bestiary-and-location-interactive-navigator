@@ -4,6 +4,7 @@ import goblin.compendium_entry.core.CompendiumEntry;
 import goblin.compendium_entry.core.DateTimeProvider;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -43,6 +44,15 @@ public class CompendiumEntryInMemoryRepositoryImpl implements CompendiumEntryInM
     }
 
     @Override
+    public List<CompendiumEntry> findAllExceedingSoftDeleteDate(Instant date) {
+        return compendiumEntries.values()
+                .stream()
+                .filter(compendiumEntry -> compendiumEntry.getSoftDeleteDate().isPresent())
+                .filter(compendiumEntry -> compendiumEntry.getSoftDeleteDate().get().isBefore(date))
+                .toList();
+    }
+
+    @Override
     public List<CompendiumEntry> findByOwnerId(UUID ownerId) {
         return compendiumEntries.values()
                 .stream()
@@ -58,6 +68,6 @@ public class CompendiumEntryInMemoryRepositoryImpl implements CompendiumEntryInM
 
     @Override
     public void delete(UUID compendiumEntryId) {
-        compendiumEntries.get(compendiumEntryId).setSoftDeleteDate(dateTimeProvider.currentDate());
+        compendiumEntries.remove(compendiumEntryId);
     }
 }

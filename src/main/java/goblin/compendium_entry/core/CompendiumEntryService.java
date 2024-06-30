@@ -1,17 +1,22 @@
 package goblin.compendium_entry.core;
 
 import goblin.compendium_entry.infrastructure.CompendiumEntryInMemoryRepository;
-import goblin.compendium_entry.infrastructure.DateTimeProviderImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Service
 public class CompendiumEntryService {
     private final CompendiumEntryInMemoryRepository compendiumEntryInMemoryRepository;
-    private final DateTimeProviderImpl dateTimeProvider;
+    private final DateTimeProvider dateTimeProvider;
 
-    public CompendiumEntryService(CompendiumEntryInMemoryRepository compendiumEntryInMemoryRepository, DateTimeProviderImpl dateTimeProvider) {
+    @Value("${goblin.compendium-entry.days-to-hard-delete}")
+    private Integer daysToHardDelete;
+
+    public CompendiumEntryService(CompendiumEntryInMemoryRepository compendiumEntryInMemoryRepository, DateTimeProvider dateTimeProvider) {
         this.compendiumEntryInMemoryRepository = compendiumEntryInMemoryRepository;
         this.dateTimeProvider = dateTimeProvider;
     }
@@ -44,7 +49,12 @@ public class CompendiumEntryService {
         compendiumEntryInMemoryRepository.update(compendiumEntryId, compendiumEntry);
     }
 
-    public void delete(UUID compendiumEntryId) {
-        compendiumEntryInMemoryRepository.delete(compendiumEntryId);
+    public void cleanupDeletedCompendiumEntries() {
+        Instant softDeletedEntryDeleteDate = dateTimeProvider.currentDate().minus(daysToHardDelete, ChronoUnit.DAYS);
+
+        compendiumEntryInMemoryRepository.findAllExceedingSoftDeleteDate(softDeletedEntryDeleteDate)
+                .forEach(compendiumEntry ->
+                        compendiumEntryInMemoryRepository.delete(compendiumEntry.getId())
+                );
     }
 }
