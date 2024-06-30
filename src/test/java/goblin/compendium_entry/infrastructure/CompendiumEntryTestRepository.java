@@ -4,15 +4,16 @@ import goblin.compendium_entry.core.DateTimeProvider;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.Primary;
 
-@TestComponent
 @Primary
-public class CompendiumEntryInMemoryTestRepository extends CompendiumEntryInMemoryRepositoryImpl {
+@TestComponent
+public class CompendiumEntryTestRepository extends CompendiumEntryRepositoryImpl {
 
-    public CompendiumEntryInMemoryTestRepository(DateTimeProvider dateTimeProvider) {
+    public CompendiumEntryTestRepository(DateTimeProvider dateTimeProvider) {
         super(dateTimeProvider);
     }
 
     public void clean() {
         compendiumEntries.clear();
     }
+
 }

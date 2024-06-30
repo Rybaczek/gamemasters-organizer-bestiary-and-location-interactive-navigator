@@ -1,0 +1,7 @@
+goblin:
+  compendium-entry:
+    days-to-hard-delete: 30
+
+#    cron:
+#      #      job will run at application start and after that every five seconds
+#      cleanup-deleted-compendium-entries: "0/5 * * * * *"
